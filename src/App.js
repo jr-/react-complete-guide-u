@@ -5,28 +5,38 @@ import Person from './Person/Person';
 class App extends Component {
   state = {
     persons: [
-      { name: 'Max', age: 20 },
-      { name: 'Manu', age: 21 }
+      { id: '1', name: 'Max', age: 20 },
+      { id: '2', name: 'Manu', age: 21 },
+      { id: '3', name: 'Mann', age: 22 } 
     ],
     otherState: 'rs',
     showPersons: false
   }
 
-  switchNameHandler = (newName) => {
-    this.setState({
-      persons: [
-        { name: newName, age: 20 },
-        { name: 'Manu', age: 22 }
-      ]
-    });
+  deletePersonHandler = (personIndex) => {
+    const persons = [ ...this.state.persons ]; //pointer to array /why const /now we have a new array
+    persons.splice(personIndex, 1); //change the information in the pointer
+    this.setState({persons: persons});
   }
 
-  nameChangedHandler = (event) => {
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = { 
+      ...this.state.persons[personIndex]
+    }; //we shouldnt mutate the real element /person is a copy element
+
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
     this.setState( {
-      persons: [
-        { name: 'Max', age: 20 },
-        { name: event.target.value, age: 22 }
-      ]
+      persons: persons
     } )
   }
 
@@ -38,73 +48,54 @@ class App extends Component {
   render() {
 
     const style = {
-      backgroundColor: 'white',
+      backgroundColor: 'green',
+      color: 'white',
       font: 'inherit',
       border: '1x solid blue',
       padding: '8px',
-      cursor: 'pointer'
+      cursor: 'pointer',
     };
+
+    let persons = null; // better approach is create variables, instead of use ternary expression
+
+    if ( this.state.showPersons ) {
+      persons = ( 
+        <div>
+          {this.state.persons.map((person, i) => {
+            return <Person
+              click={() => this.deletePersonHandler(i)}
+              name={person.name} 
+              age={person.age}
+              key={person.id}
+              changed={(event) => this.nameChangedHandler(event, person.id)} /> // key attribute guarantee that react work and rerender in the optimized way
+          })}
+        </div>
+      );
+      style.backgroundColor = 'red';
+    }
+
+    const classes = [];
+    if (this.state.persons.length <= 2) {
+      classes.push('red');
+    }
+    if (this.state.persons.length <= 1) {
+      classes.push('bold');
+    }
+
 
     return (
       <div className="App">
         <h1>pff</h1>
+        <p className={classes.join(' ')}>This is really working!</p>
         <button
           style={style}
           onClick={this.togglePersonsHandler}>Toggle Persons</button>
-        { 
-          this.state.showPersons ?
-            <div>  
-              <Person 
-                name={this.state.persons[0].name} 
-                age={this.state.persons[0].age}
-                click={this.switchNameHandler.bind(this, 'Maxx!')} >My hobbies: Racing</Person>
-              <Person 
-                name={this.state.persons[1].name} 
-                age={this.state.persons[1].age}
-                changed={this.nameChangedHandler}>My hobbies: Racing</Person>
-            </div> : null
-        }
+          
+          {persons}
+
       </div>
     );
   }
 }
 
 export default App;
-
-// const app = props => {
-//   const [ personsState, setPersonsState ] = useState({
-//     persons: [
-//       { name: 'Max', age: 20 },
-//       { name: 'Manu', age: 21 }
-//     ],
-//     otherState: 'rs'
-//   });
-  
-//   const switchNameHandler = () => {
-//     // console.log('he');
-//     setPersonsState({
-//       persons: [
-//         { name: 'Maxzdd', age: 20 },
-//         { name: 'Manu', age: 22 }
-//       ],
-//       otherState: personsState.otherState
-//     });
-//   }
-  
-
-//     return (
-//       <div className="App">
-//         <h1>pff</h1>
-//         <button onClick={switchNameHandler}>Switch Name</button>
-//         <Person 
-//         name={personsState.persons[0].name} 
-//         age={personsState.persons[0].age}>My hobbies: Racing</Person>
-//         <Person 
-//         name={personsState.persons[1].name} 
-//         age={personsState.persons[1].age}>My hobbies: Racing</Person>
-//       </div>
-//     );
-//   }
-  
-//   export default app;
-
