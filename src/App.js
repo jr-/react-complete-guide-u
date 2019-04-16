@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classes from './App.css';
 import Person from './Person/Person';
+import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
 
 class App extends Component {
   state = {
@@ -21,7 +22,7 @@ class App extends Component {
 
   nameChangedHandler = (event, id) => {
     const personIndex = this.state.persons.findIndex(p => {
-      return p.id === id;
+      return  p.id === id;
     });
 
     const person = { 
@@ -47,31 +48,27 @@ class App extends Component {
 
   render() {
 
-    const style = {
-      backgroundColor: 'green',
-      color: 'white',
-      font: 'inherit',
-      border: '1x solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-    };
-
     let persons = null; // better approach is create variables, instead of use ternary expression
+    let btnClass = '';
+
 
     if ( this.state.showPersons ) {
       persons = ( 
         <div>
           {this.state.persons.map((person, i) => {
-            return <Person
+            // the key has to be in the outer element in a map method
+            return <ErrorBoundary> key={person.id} 
+              <Person
               click={() => this.deletePersonHandler(i)}
               name={person.name} 
               age={person.age}
-              key={person.id}
-              changed={(event) => this.nameChangedHandler(event, person.id)} /> // key attribute guarantee that react work and rerender in the optimized way
+              changed={(event) => this.nameChangedHandler(event, person.id)} />
+              </ErrorBoundary> // key attribute guarantee that react work and rerender in the optimized way
           })}
         </div>
       );
-      style.backgroundColor = 'red';
+
+      btnClass = classes.Red;
     }
 
     const assignedClasses = [];
@@ -88,7 +85,7 @@ class App extends Component {
         <h1>pff</h1>
         <p className={assignedClasses.join(' ')}>This is really working!</p>
         <button
-          style={style}
+          className={btnClass}
           onClick={this.togglePersonsHandler}>Toggle Persons</button>
           
           {persons}
