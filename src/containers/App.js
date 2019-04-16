@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import classes from './App.css';
-import Person from './Person/Person';
-import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
+import Person from '../components/Persons/Person/Person';
 
 class App extends Component {
   state = {
@@ -56,14 +55,12 @@ class App extends Component {
       persons = ( 
         <div>
           {this.state.persons.map((person, i) => {
-            // the key has to be in the outer element in a map method
-            return <ErrorBoundary> key={person.id} 
-              <Person
+            return <Person
+              key={person.id} 
               click={() => this.deletePersonHandler(i)}
               name={person.name} 
               age={person.age}
               changed={(event) => this.nameChangedHandler(event, person.id)} />
-              </ErrorBoundary> // key attribute guarantee that react work and rerender in the optimized way
           })}
         </div>
       );
