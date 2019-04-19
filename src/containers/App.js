@@ -4,6 +4,12 @@ import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
 //container manages the state and manipulate the state
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    console.log('[App.js] constructor');
+  }
+
   state = {
     persons: [
       { id: '1', name: 'Max', age: 20 },
@@ -18,6 +24,19 @@ class App extends Component {
     const persons = [ ...this.state.persons ]; //pointer to array /why const /now we have a new array
     persons.splice(personIndex, 1); //change the information in the pointer
     this.setState({persons: persons});
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  componentWillMount() {
+    console.log('[App.js] componentWillMount');
+  }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
   }
 
   nameChangedHandler = (event, id) => {
@@ -47,7 +66,7 @@ class App extends Component {
   }
 
   render() {
-
+    console.log('[App.js] render');
     let persons = null; // better approach is create variables, instead of use ternary expression
 
     if ( this.state.showPersons ) {
@@ -61,7 +80,8 @@ class App extends Component {
 
     return (
       <div className={classes.App}>
-        <Cockpit 
+        <Cockpit
+          title={this.props.appTitle}
           showPersons={this.state.showPersons}
           persons={this.state.persons}
           clicked={this.togglePersonsHandler}>
